@@ -104,6 +104,5 @@ class Encoder(nn.Module):
         # damage_mask[:, :, start_width:(start_width + random_width), start_height:(start_height + random_height)] = 0
 
         damage_mask = torch.zeros(input_dict['img'].shape[0], 1, self.block, self.block, device=input_dict['img'].device).uniform_() > self.missing
-        damage_mask = F.interpolate(damage_mask.to(input_dict['img']), size=input_dict['img'].shape[-1], mode='nearest')
-        mask_batch['damaged_img'] = input_dict['img'] * damage_mask
+        mask_batch['damaged_img'] = input_dict['img'] * F.interpolate(damage_mask.to(input_dict['img']), size=input_dict['img'].shape[-1], mode='nearest')
         return mask_batch
