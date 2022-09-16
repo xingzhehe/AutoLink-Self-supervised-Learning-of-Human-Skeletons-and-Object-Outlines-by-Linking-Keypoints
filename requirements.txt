@@ -1,0 +1,11 @@
+numpy
+torch
+torchvision
+matplotlib
+scipy
+h5py
+pandas
+kornia
+wandb
+pytorch-lightning==1.5.10
+seaborn
