@@ -10,7 +10,7 @@ from datasets.base_dataset import DataModule
 ## 1722_95
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--debug', type=int, default=1)
+    parser.add_argument('--debug', type=int, default=0)
     parser.add_argument('--project', type=str, default='AutoLink')
     parser.add_argument('--model', type=str, default='model')
     parser.add_argument('--encoder', type=str, default='encoder')
