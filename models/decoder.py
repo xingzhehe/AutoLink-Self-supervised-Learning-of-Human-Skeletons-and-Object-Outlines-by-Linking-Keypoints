@@ -36,20 +36,6 @@ def draw_lines(paired_joints, heatmap_size=16, thick=1e-2):
     return heatmaps
 
 
-def gen_keypoints(joints, heatmap_size=16, thick=1e-2):
-    """
-    :param joints: (batch_size, n_points, 2)
-    :return: (batch_size, n_points, grid_size, grid_size)
-    dist[i,j] = ||x[b,i,:]-y[b,j,:]||
-    """
-    batch_size, n_points, _ = joints.shape
-    grid = gen_grid2d(heatmap_size, device=joints.device).reshape(1, -1, 2)
-    diff = joints.unsqueeze(-2) - grid.unsqueeze(-3)  # (batch_size, n_points, 4**2, 2)
-    dist = diff.square().sum(dim=-1)
-    heatmaps = torch.exp(-dist / thick)
-    return heatmaps.reshape(batch_size, n_points, heatmap_size, heatmap_size)
-
-
 class DownBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
@@ -86,35 +72,6 @@ class UpBlock(nn.Module):
         return x
 
 
-class ResBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super().__init__()
-
-        self.net = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
-            nn.BatchNorm2d(out_channels),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, stride=1),
-            nn.BatchNorm2d(out_channels)
-        )
-
-    def forward(self, x):
-        return x + self.net(x)
-
-
-class Conv2DMod(nn.Module):
-    def __init__(self, in_channel, out_channel):
-        super().__init__()
-        self.weight = nn.Parameter(torch.randn((out_channel, in_channel, 1, 1)))
-        self.bias = nn.Parameter(torch.zeros(out_channel))
-        nn.init.kaiming_normal_(self.weight, a=0.2, mode='fan_in', nonlinearity='leaky_relu')
-
-    def forward(self, x):
-        weight = self.weight / self.weight.std(dim=0, keepdim=True)
-        x = F.conv2d(x, weight, bias=self.bias)
-        return x
-
-
 class Decoder(nn.Module):
     def __init__(self, hyper_paras):
         super().__init__()
@@ -139,12 +96,6 @@ class Decoder(nn.Module):
         self.down3 = DownBlock(256, 512)  # 16
         self.down4 = DownBlock(512, 512)  # 8
 
-        # self.res = nn.Sequential(
-        #     ResBlock(512, 512),
-        #     ResBlock(512, 512),
-        #     ResBlock(512, 512),
-        #     ResBlock(512, 512),
-        # )
         self.up1 = UpBlock(512, 512)  # 16
         self.up2 = UpBlock(512 + 512, 256)  # 32
         self.up3 = UpBlock(256 + 256, 128)  # 64
@@ -176,14 +127,6 @@ class Decoder(nn.Module):
         skeleton_heatmap_sep = skeleton_heatmap_sep * skeleton_scalar.reshape(1, self.n_skeleton, 1, 1)
         skeleton_heatmap = skeleton_heatmap_sep.max(dim=1, keepdim=True)[0]
 
-        # import matplotlib.pyplot as plt
-        # for i in range(skeleton_heatmap.shape[1]):
-        #     plt.imshow(skeleton_heatmap[0, i].detach().cpu())
-        #     plt.colorbar()
-        #     paired_joints_ = paired_joints.detach().cpu() * 63.5 + 63.5
-        #     plt.scatter(paired_joints_[0, i, :, 1], paired_joints_[0, i, :, 0])
-        #     plt.show()
-
         x = torch.cat([input_dict['damaged_img'] * self.alpha, skeleton_heatmap], dim=1)
 
         down_128 = self.down0(x)
@@ -191,7 +134,6 @@ class Decoder(nn.Module):
         down_32 = self.down2(down_64)
         down_16 = self.down3(down_32)
         down_8 = self.down4(down_16)
-        # up_8 = self.res(down_8)
         up_8 = down_8
         up_16 = torch.cat([self.up1(up_8), down_16], dim=1)
         up_32 = torch.cat([self.up2(up_16), down_32], dim=1)
