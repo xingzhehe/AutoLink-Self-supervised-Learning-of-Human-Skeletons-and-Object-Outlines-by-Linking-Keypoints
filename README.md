@@ -56,7 +56,7 @@ where,
 To train our model on CelebA-in-the-wild, run
 
 ```
-python train.py --n_parts 8 -missing 0.8 --block 16 --thick 2.5e-3 --sklr 512 --data_root data/celeba_wild -dataset celeba_wild
+python train.py --n_parts 8 --missing 0.8 --block 16 --thick 2.5e-3 --sklr 512 --data_root data/celeba_wild --dataset celeba_wild
 ```
 
 where, 
