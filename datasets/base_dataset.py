@@ -22,6 +22,10 @@ class DataModule(pl.LightningDataModule):
     def train_dataloader(self):
         return torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size,
                                            num_workers=self.num_workers, shuffle=True, drop_last=True)
+    
+    def val_dataloader(self):
+        return torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size,
+                                           num_workers=self.num_workers, shuffle=False, drop_last=True)
 
     def test_dataloader(self):
         return [torch.utils.data.DataLoader(self.train_reg_dataset, batch_size=self.batch_size, num_workers=self.num_workers, shuffle=False),
