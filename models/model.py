@@ -45,7 +45,7 @@ class Model(pl.LightningModule):
         heatmap_overlaid = torch.cat([heatmap] * 3, dim=1) / heatmap.max()
         heatmap_overlaid = torch.clamp(heatmap_overlaid + imgs * 0.5, min=0, max=1)
 
-        self.logger.experiment.log({'generated': [wandb.Image(draw_img_grid(denormalize(recon_batch['img']).cpu()), caption='original_image'),
+        self.logger.experiment.log({'generated': [wandb.Image(draw_img_grid(denormalize(outputs[0]['img']).cpu()), caption='original_image'),
                                                   wandb.Image(draw_img_grid(denormalize(recon_batch['img']).cpu()), caption='reconstructed'),
                                                   wandb.Image(draw_img_grid(heatmap_overlaid.cpu()), caption='heatmap_overlaid'),
                                                   wandb.Image(draw_kp_grid_unnorm(recon_batch['heatmap'], scaled_kp), caption='heatmap'),
