@@ -51,7 +51,7 @@ if __name__ == '__main__':
         val_check_every_epoch = round(val_check_every_epoch)
 
     trainer = pl.Trainer(accelerator='gpu', gpus=model.hparams.gpus, num_nodes=model.hparams.num_nodes,
-                         num_processes=model.hparams.num_workers, fast_dev_run=model.hparams.debug,
+                         fast_dev_run=model.hparams.debug,
                          max_steps=20001, precision=16, auto_scale_batch_size='binsearch', sync_batchnorm=True, #strategy='ddp',
                          limit_val_batches=1,
                          val_check_interval=val_check_interval,
