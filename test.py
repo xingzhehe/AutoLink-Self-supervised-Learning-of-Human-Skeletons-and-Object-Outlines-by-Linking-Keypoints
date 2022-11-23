@@ -24,6 +24,5 @@ if __name__ == '__main__':
                          precision=16, sync_batchnorm=True,
                          logger=WandbLogger(name=args.log, project="AutoLink_test"),
                          )
-    # datamodule = DataModule(model.hparams.dataset, args.data_root, model.hparams.image_size, args.batch_size)
-    datamodule = DataModule('cub_three', args.data_root, model.hparams.image_size, args.batch_size)
+    datamodule = DataModule(model.hparams.dataset, args.data_root, model.hparams.image_size, args.batch_size)
     trainer.test(model, datamodule=datamodule)
