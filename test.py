@@ -20,8 +20,8 @@ if __name__ == '__main__':
 
     model = importlib.import_module('models.' + args.model).Model.load_from_checkpoint(os.path.join('checkpoints', args.log, 'model.ckpt'))
 
-    trainer = pl.Trainer(gpus=1, num_processes=6,
-                         precision=16, sync_batchnorm=True, weights_summary=None, checkpoint_callback=False,
+    trainer = pl.Trainer(accelerator='gpu', gpus=1,
+                         precision=16, sync_batchnorm=True,
                          logger=WandbLogger(name=args.log, project="AutoLink_test"),
                          )
     # datamodule = DataModule(model.hparams.dataset, args.data_root, model.hparams.image_size, args.batch_size)
