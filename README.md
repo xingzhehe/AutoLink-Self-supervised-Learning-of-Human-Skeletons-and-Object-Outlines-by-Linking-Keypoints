@@ -1,10 +1,10 @@
-# AutoLink: Self-supervised Learning of Human Skeletons and Object Outlines by Linking Keypoints (NeurIPS 2022)
+# AutoLink: Self-supervised Learning of Human Skeletons and Object Outlines by Linking Keypoints (NeurIPS 2022 Spotlight)
 
 ![](assets/teaser.png)
 
 > **AutoLink: Self-supervised Learning of Human Skeletons and Object Outlines by Linking Keypoints** <br>
 > [Xingzhe He](https://xingzhehe.github.io/), [Bastian Wandt](http://bastianwandt.de/), and [Helge Rhodin](http://helge.rhodin.de/) <br>
-> *Thirty-sixth Conference on Neural Information Processing Systems* (**NeurIPS 2022**)
+> *Thirty-sixth Conference on Neural Information Processing Systems* (**NeurIPS 2022 Spotlight**)
 
 [[Paper](https://arxiv.org/abs/2205.10636)][[Website](https://xingzhehe.github.io/autolink/)]
 
