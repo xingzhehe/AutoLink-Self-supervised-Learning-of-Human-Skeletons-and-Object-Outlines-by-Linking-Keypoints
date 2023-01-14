@@ -53,7 +53,7 @@ where,
 
 ## Training
 
-**Note: We notice that the models trained on A100 and A6000 are not as good as the ones trained on V100, especially for human body datasets such as h36m. The reason is unknown, and we are still investigating it. Thanks [Yuchen Yang](https://charrrrrlie.github.io/) for valuable discussion and experiments**
+**Note: We notice that the models trained on A100 and A6000 are not as good as the ones trained on V100, especially for human body datasets such as h36m. The reason is unknown, and we are still investigating it. We acknowledge [Yuchen Yang](https://charrrrrlie.github.io/) for valuable discussion and experiments.**
 
 To train our model on CelebA-in-the-wild, run
 
