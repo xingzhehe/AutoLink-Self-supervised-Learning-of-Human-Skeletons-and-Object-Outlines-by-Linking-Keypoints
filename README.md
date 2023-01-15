@@ -53,7 +53,7 @@ where,
 
 ## Training
 
-**Note: We notice that, on h36m, training on A100 and A6000 are not as stable as training on V100, and there might be overfitting. We suggest to stop early or use larger masking ratio if readers want to train h36m on A100 or A6000. We acknowledge [Yuchen Yang](https://charrrrrlie.github.io/) for valuable discussion and experiments.**
+**Note: We notice that, on h36m, training on A100 and A6000 are not as stable as training on V100, and there might be overfitting. We suggest to stop early or use larger masking ratio if readers want to train on h36m on A100 or A6000. We acknowledge [Yuchen Yang](https://charrrrrlie.github.io/) for valuable discussion and experiments.**
 
 To train our model on CelebA-in-the-wild, run
 
