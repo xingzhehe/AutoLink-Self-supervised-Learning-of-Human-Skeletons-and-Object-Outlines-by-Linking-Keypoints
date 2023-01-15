@@ -131,7 +131,7 @@ def swap_points(points):
     for a, b in correspondences:
         permutation[a] = b
         permutation[b] = a
-    new_points = points[:, permutation, :]
+    new_points = points[:, permutation, :].clone()
     return new_points
 
 
@@ -157,7 +157,7 @@ def regress_kp(batch_list):
         should_swap = dist > swaped_dist
 
         if should_swap.sum() > 10:
-            y[should_swap] = swaped_y[should_swap]
+            y[should_swap] = swaped_y[should_swap].clone()
         else:
             break
 
@@ -196,7 +196,7 @@ def test_epoch_end(batch_list_list):
         should_swap = dist > swaped_dist
 
         if should_swap.sum() > 10:
-            y[should_swap] = swaped_y[should_swap]
+            y[should_swap] = swaped_y[should_swap].clone()
         else:
             break
 
