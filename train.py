@@ -52,13 +52,12 @@ if __name__ == '__main__':
 
     trainer = pl.Trainer(accelerator='gpu', gpus=model.hparams.gpus, num_nodes=model.hparams.num_nodes,
                          fast_dev_run=model.hparams.debug,
-                         max_steps=20001, precision=16, auto_scale_batch_size='binsearch', sync_batchnorm=True, #strategy='ddp',
+                         max_steps=20001, precision=16, sync_batchnorm=True, #strategy='ddp',
                          limit_val_batches=1,
                          val_check_interval=val_check_interval,
                          check_val_every_n_epoch=val_check_every_epoch,
                          callbacks=checkpoint_callback, logger=wandb_logger,
                          )
 
-    # trainer.tune(model, datamodule=datamodule)
     trainer.fit(model, datamodule=datamodule)
     trainer.test(model, datamodule=datamodule)
