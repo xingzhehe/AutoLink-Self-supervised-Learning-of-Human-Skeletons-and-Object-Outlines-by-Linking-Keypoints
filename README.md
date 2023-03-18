@@ -1,7 +1,12 @@
 # AutoLink: Self-supervised Learning of Human Skeletons and Object Outlines by Linking Keypoints (NeurIPS 2022 Spotlight)
 
-![](assets/teaser.png)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/autolink-self-supervised-learning-of-human/unsupervised-human-pose-estimation-on-tai-chi)](https://paperswithcode.com/sota/unsupervised-human-pose-estimation-on-tai-chi?p=autolink-self-supervised-learning-of-human)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/autolink-self-supervised-learning-of-human/unsupervised-human-pose-estimation-on-human3)](https://paperswithcode.com/sota/unsupervised-human-pose-estimation-on-human3?p=autolink-self-supervised-learning-of-human)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/autolink-self-supervised-learning-of-human/unsupervised-human-pose-estimation-on)](https://paperswithcode.com/sota/unsupervised-human-pose-estimation-on?p=autolink-self-supervised-learning-of-human)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/autolink-self-supervised-learning-of-human/unsupervised-facial-landmark-detection-on-5)](https://paperswithcode.com/sota/unsupervised-facial-landmark-detection-on-5?p=autolink-self-supervised-learning-of-human)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/autolink-self-supervised-learning-of-human/unsupervised-facial-landmark-detection-on-1)](https://paperswithcode.com/sota/unsupervised-facial-landmark-detection-on-1?p=autolink-self-supervised-learning-of-human)
 
+![](assets/teaser.png)
 > **AutoLink: Self-supervised Learning of Human Skeletons and Object Outlines by Linking Keypoints** <br>
 > [Xingzhe He](https://xingzhehe.github.io/), [Bastian Wandt](http://bastianwandt.de/), and [Helge Rhodin](http://helge.rhodin.de/) <br>
 > *Thirty-sixth Conference on Neural Information Processing Systems* (**NeurIPS 2022 Spotlight**)
