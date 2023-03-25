@@ -6,7 +6,7 @@ import imageio
 import pytorch_lightning as pl
 import torch.nn.functional as F
 
-from visualization import *
+from utils_.visualization import *
 
 torch.set_grad_enabled(False)
 device = 'cuda:0'

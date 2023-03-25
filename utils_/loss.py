@@ -9,10 +9,10 @@ class VGGPerceptualLoss(torch.nn.Module):
     def __init__(self):
         super(VGGPerceptualLoss, self).__init__()
         os.environ['TORCH_HOME'] = os.path.abspath(os.getcwd())
-        blocks = [torchvision.models.vgg16(pretrained=True).features[:4].eval(),
-                  torchvision.models.vgg16(pretrained=True).features[4:9].eval(),
-                  torchvision.models.vgg16(pretrained=True).features[9:16].eval(),
-                  torchvision.models.vgg16(pretrained=True).features[16:23].eval()]
+        blocks = [torchvision.models.vgg16(weights='DEFAULT').features[:4].eval(),
+                  torchvision.models.vgg16(weights='DEFAULT').features[4:9].eval(),
+                  torchvision.models.vgg16(weights='DEFAULT').features[9:16].eval(),
+                  torchvision.models.vgg16(weights='DEFAULT').features[16:23].eval()]
         for bl in blocks:
             for p in bl.parameters():
                 p.requires_grad = False

@@ -33,29 +33,37 @@ The [CelebA-in-the-wild](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html), [Ta
 The pre-trained models can be downloaded from [Google Drive](https://drive.google.com/drive/folders/1XTY0rZ2uO3BYV7Jxp13IOaAcmKBJ7RmA?usp=sharing).
 
 ## Testing
+To **qualitatively** test the model, you can run our demo by
+```
+python app.py --log celeba_wild/celeba_wild_k8_m0.8_b16_t0.0025_sklr512
+```
 
-To numerically test the model performance, run
+where,
+
+- `--log` specifies the checkpoint folder under `checkpoints/
+
+The default is our model on face:
+
+![](assets/demo.png)
+
+You can also generate multiple images at the same time. Run
+
+```
+python gen_detection.py --log celeba_wild/celeba_wild_k8_m0.8_b16_t0.0025_sklr512 --folder_name celeba_wild_k8_detection --data_root data/celeba_wild
+```
+
+where,
+
+- `--data_root` specifies the location of the dataset, 
+- `--folder_name` specifies the folder where you want to save the detection images.
+
+To **numerically** test the model performance, run
 
 ```
 python test.py --log celeba_wild/celeba_wild_k8_m0.8_b16_t0.0025_sklr512 --data_root data/celeba_wild
 ```
 
-where, 
-
-- `--log` specifies the checkpoint folder under `checkpoints/`,
-- `--data_root` specifies the location of the dataset, 
-
 Therefore, the above command will give the performance metric on CelebA-in-the-wild, which is described in the paper.
-
-You can also qualitatively test the model.
-
-```
-python gen_detection.py --log log/celeba_wild_k8_m0.8_b16_t0.0025_sklr512 --folder_name celeba_wild_k8_detection --data_root data/celeba_wild
-```
-
-where,
-
-- `--folder_name` specifies the folder where you want to save the detection images.
 
 ## Training
 

@@ -1,17 +1,23 @@
 import torch
 import torch.nn.functional as F
 from torch import nn
+from typing import Union
+import pytorch_lightning as pl
 
 
-def gen_grid2d(grid_size, device='cpu', left_end=-1, right_end=1):
-    x = torch.linspace(left_end, right_end, grid_size).to(device)
-    x, y = torch.meshgrid([x, x])
+def gen_grid2d(grid_size: int, left_end: float=-1, right_end: float=1) -> torch.Tensor:
+    """
+    Generate a grid of size (grid_size, grid_size, 2) with coordinate values in the range [left_end, right_end]
+    """
+    x = torch.linspace(left_end, right_end, grid_size)
+    x, y = torch.meshgrid([x, x], indexing='ij')
     grid = torch.cat((x.reshape(-1, 1), y.reshape(-1, 1)), dim=1).reshape(grid_size, grid_size, 2)
     return grid
 
 
-def draw_lines(paired_joints, heatmap_size=16, thick=1e-2):
+def draw_lines(paired_joints: torch.Tensor, heatmap_size: int=16, thick: Union[float, torch.Tensor]=1e-2) -> torch.Tensor:
     """
+    Draw lines on a grid.
     :param paired_joints: (batch_size, n_points, 2, 2)
     :return: (batch_size, n_points, grid_size, grid_size)
     dist[i,j] = ||x[b,i,:]-y[b,j,:]||^2
@@ -20,10 +26,10 @@ def draw_lines(paired_joints, heatmap_size=16, thick=1e-2):
     start = paired_joints[:, :, 0, :]   # (batch_size, n_points, 2)
     end = paired_joints[:, :, 1, :]     # (batch_size, n_points, 2)
     paired_diff = end - start           # (batch_size, n_points, 2)
-    grid = gen_grid2d(heatmap_size, device=paired_joints.device).reshape(1, 1, -1, 2)
+    grid = gen_grid2d(heatmap_size).to(paired_joints.device).reshape(1, 1, -1, 2)
     diff_to_start = grid - start.unsqueeze(-2)  # (batch_size, n_points, heatmap_size**2, 2)
     # (batch_size, n_points, heatmap_size**2)
-    t = (diff_to_start @ paired_diff.unsqueeze(-1)).squeeze(-1) / paired_diff.square().sum(dim=-1, keepdim=True)
+    t = (diff_to_start @ paired_diff.unsqueeze(-1)).squeeze(-1) / (1e-8+paired_diff.square().sum(dim=-1, keepdim=True))
 
     diff_to_end = grid - end.unsqueeze(-2)  # (batch_size, n_points, heatmap_size**2, 2)
 
@@ -37,43 +43,43 @@ def draw_lines(paired_joints, heatmap_size=16, thick=1e-2):
 
 
 class DownBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, in_channels: int, out_channels: int) -> None:
         super().__init__()
         self.net = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size=(3, 3), padding=1),
             nn.BatchNorm2d(out_channels),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2, True),
             nn.Conv2d(out_channels, out_channels, kernel_size=(3, 3), padding=1),
             nn.BatchNorm2d(out_channels),
             nn.Upsample(scale_factor=0.5, mode='bilinear', align_corners=False),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2, True),
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.net(x)
         return x
 
 
 class UpBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, in_channels: int, out_channels: int) -> None:
         super().__init__()
         self.net = nn.Sequential(
             nn.Upsample(scale_factor=2, mode='bilinear', align_corners=False),
             nn.Conv2d(in_channels, out_channels, kernel_size=(3, 3), padding=1),
             nn.BatchNorm2d(out_channels),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2, True),
             nn.Conv2d(out_channels, out_channels, kernel_size=(3, 3), padding=1),
             nn.BatchNorm2d(out_channels),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2, True),
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.net(x)
         return x
 
 
 class Decoder(nn.Module):
-    def __init__(self, hyper_paras):
+    def __init__(self, hyper_paras: pl.LightningModule.hparams) -> None:
         super().__init__()
         self.n_parts = hyper_paras['n_parts']
         self.thick = hyper_paras['thick']
@@ -88,7 +94,7 @@ class Decoder(nn.Module):
 
         self.down0 = nn.Sequential(
             nn.Conv2d(3 + 1, 64, kernel_size=(3, 3), padding=1),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2, True),
         )
 
         self.down1 = DownBlock(64, 128)  # 64
@@ -109,23 +115,36 @@ class Decoder(nn.Module):
                 if m.bias is not None:
                     m.bias.data.zero_()
 
-    def forward(self, input_dict):
-        joints = input_dict['keypoints']
-        bs = joints.shape[0]
+    def skeleton_scalar_matrix(self) -> torch.Tensor:
+        """
+        Give the skeleton scalar matrix
+        :return: (n_parts, n_parts)
+        """
+        skeleton_scalar = F.softplus(self.skeleton_scalar * self.sklr)
+        skeleton_scalar = torch.triu(skeleton_scalar, diagonal=1)
+        skeleton_scalar = skeleton_scalar + skeleton_scalar.transpose(1, 0)
+        return skeleton_scalar
 
-        paired_joints = torch.cat([
-            joints.reshape(bs, self.n_parts, 1, 2).expand(-1, -1, self.n_parts, -1).reshape(bs, self.n_parts ** 2, 1, 2),
-            joints.reshape(bs, 1, self.n_parts, 2).expand(-1, self.n_parts, -1, -1).reshape(bs, self.n_parts ** 2, 1, 2)
-        ], dim=2).reshape(bs, self.n_parts, self.n_parts, 2, 2)[:, self.skeleton_idx[0], self.skeleton_idx[1], :, :]
+    def rasterize(self, keypoints: torch.Tensor, output_size: int=128) -> torch.Tensor:
+        """
+        Generate edge heatmap from keypoints, where edges are weighted by the learned scalars.
+        :param keypoints: (batch_size, n_points, 2)
+        :return: (batch_size, 1, heatmap_size, heatmap_size)
+        """
+
+        paired_joints = torch.stack([keypoints[:, self.skeleton_idx[0], :2], keypoints[:, self.skeleton_idx[1], :2]], dim=2)
 
         skeleton_scalar = F.softplus(self.skeleton_scalar * self.sklr)
         skeleton_scalar = torch.triu(skeleton_scalar, diagonal=1)
-        input_dict['skeleton_scalar_matrix'] = skeleton_scalar + skeleton_scalar.transpose(1, 0)
         skeleton_scalar = skeleton_scalar[self.skeleton_idx[0], self.skeleton_idx[1]].reshape(1, self.n_skeleton, 1, 1)
 
-        skeleton_heatmap_sep = draw_lines(paired_joints, heatmap_size=input_dict['damaged_img'].shape[-1], thick=self.thick)
+        skeleton_heatmap_sep = draw_lines(paired_joints, heatmap_size=output_size, thick=self.thick)
         skeleton_heatmap_sep = skeleton_heatmap_sep * skeleton_scalar.reshape(1, self.n_skeleton, 1, 1)
         skeleton_heatmap = skeleton_heatmap_sep.max(dim=1, keepdim=True)[0]
+        return skeleton_heatmap
+
+    def forward(self, input_dict: dict) -> dict:
+        skeleton_heatmap = self.rasterize(input_dict['keypoints'])
 
         x = torch.cat([input_dict['damaged_img'] * self.alpha, skeleton_heatmap], dim=1)
 
@@ -142,7 +161,6 @@ class Decoder(nn.Module):
         img = self.conv(up_128)
 
         input_dict['heatmap'] = skeleton_heatmap
-        input_dict['heatmap_sep'] = skeleton_heatmap_sep
         input_dict['img'] = img
         return input_dict
 
