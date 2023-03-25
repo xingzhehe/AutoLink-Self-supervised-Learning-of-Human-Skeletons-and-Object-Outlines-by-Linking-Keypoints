@@ -52,8 +52,6 @@ with gr.Blocks() as blocks:
     gr.Markdown("""
     # AutoLink
     ## Self-supervised Learning of Human Skeletons and Object Outlines by Linking Keypoints
-    ## This demo is specifically for self-supervised facial landmark detection
-    #### Note that there is no face detection in this demo, so please make sure that the face is center-around in the image.
     * [Paper](https://arxiv.org/abs/2205.10636)
     * [Project Page](https://xingzhehe.github.io/autolink/)
     * [GitHub](https://github.com/xingzhehe/AutoLink-Self-supervised-Learning-of-Human-Skeletons-and-Object-Outlines-by-Linking-Keypoints)

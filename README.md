@@ -12,7 +12,7 @@
 > [Xingzhe He](https://xingzhehe.github.io/), [Bastian Wandt](http://bastianwandt.de/), and [Helge Rhodin](http://helge.rhodin.de/) <br>
 > *Thirty-sixth Conference on Neural Information Processing Systems* (**NeurIPS 2022 Spotlight**)
 
-[[Paper](https://arxiv.org/abs/2205.10636)][[Website](https://xingzhehe.github.io/autolink/)]
+[[Paper](https://arxiv.org/abs/2205.10636)][[Website](https://xingzhehe.github.io/autolink/)][[🤗 Hugging Face Demo ](https://huggingface.co/spaces/xingzhehe/AutoLink)]
 
 ## Setup
 
