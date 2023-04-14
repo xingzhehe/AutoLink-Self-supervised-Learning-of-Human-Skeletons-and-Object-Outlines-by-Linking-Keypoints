@@ -90,8 +90,7 @@ class Model(pl.LightningModule):
 
     def test_step(self, batch, batch_idx, dataloader_idx=0):
         kp = self.encoder(batch)['keypoints']
-        out_batch = batch.copy()
-        out_batch['det_keypoints'] = kp
+        out_batch = {'keypoints': batch['keypoints'].cpu(), 'det_keypoints': kp.cpu()}
         return out_batch
 
     def test_epoch_end(self, outputs):
