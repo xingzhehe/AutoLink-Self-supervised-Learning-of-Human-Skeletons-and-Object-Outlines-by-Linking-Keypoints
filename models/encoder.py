@@ -88,8 +88,8 @@ class Encoder(nn.Module):
     def __init__(self, hyper_paras: pl.utilities.parsing.AttributeDict) -> None:
         super().__init__()
         self.detector = Detector(hyper_paras)
-        self.missing = 0.8 # hyper_paras.missing
-        self.block = 16 # hyper_paras.block
+        self.missing = hyper_paras.missing
+        self.block = hyper_paras.block
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
