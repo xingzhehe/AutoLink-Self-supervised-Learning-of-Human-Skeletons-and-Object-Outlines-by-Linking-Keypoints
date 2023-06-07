@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('--n_parts', type=int, default=4)
     parser.add_argument('--missing', type=float, default=0.8)
     parser.add_argument('--block', type=int, default=16)
-    parser.add_argument('--thick', type=float, default=5e-2)
+    parser.add_argument('--thick', type=float, default=1e-3)
     parser.add_argument('--sklr', type=float, default=512)
     parser.add_argument('--image_size', type=int, default=128)
     parser.add_argument('--lr', type=float, default=1e-4)
