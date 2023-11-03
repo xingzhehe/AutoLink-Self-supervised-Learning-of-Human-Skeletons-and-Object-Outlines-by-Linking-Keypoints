@@ -12,4 +12,4 @@ seaborn
 scikit-learn
 imageio
 imageio-ffmpeg
-gradio
+gradio==3.40.0
